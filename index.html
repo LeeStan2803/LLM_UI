@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LLM UI</title>
+  <script src="/socket.io/socket.io.js"></script>
+
+  <style>
+    #primary-output {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    #secondary-output {
+      border: 1px solid #ccc;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>LLM UI</h1>
+  <input type="text" id="prompt" placeholder="Enter your prompt">
+  <button id="send">Send</button>
+
+  <h2>Primary Output</h2>
+  <div id="primary-output"></div>
+
+  <h2>Secondary Output</h2>
+  <div id="secondary-output"></div>
+
+  <script>
+    const socket = io();
+
+    document.getElementById('send').addEventListener('click', () => {
+      const prompt = document.getElementById('prompt').value;
+      socket.emit('request-llm', { prompt });
+    });
+
+    socket.on('primary-output', (data) => {
+      document.getElementById('primary-output').innerText = data;
+    });
+
+    socket.on('secondary-output', (data) => {
+      document.getElementById('secondary-output').innerText = JSON.stringify(data, null, 2);
+    });
+
+    socket.on('error', (message) => {
+      alert(message);
+    });
+  </script>
+</body>
+</html>
